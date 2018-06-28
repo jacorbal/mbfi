@@ -1,0 +1,9 @@
+*~
+.*.sw?
+*.un~
+Session.vim
+.netrwhist
+
+_tmp_
+*.nosync
+

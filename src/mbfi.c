@@ -9,51 +9,30 @@
  *
  * @note Minimal Brainfuck interpreter
  */
+/*
+ * THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND,
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+ * NONINFRINGEMENT.  IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
+ * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
+ * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+ * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
 
 #include <stdlib.h>
 #include <stdio.h>
-//#include <string.h>
 
 #include <mbfi.h>
 
 
-#define MAX_BUFFER 30000
-
-
-/**
- * @enum commands
- *
- * @brief The eight language commands each consist of a single character
- */
-enum {
-    BF_ADD = '+',       /* add */
-    BF_SUB = '-',       /* subtract */
-    BF_ALE = '<',       /* arrow left */
-    BF_ARI = '>',       /* arrow right */
-    BF_BLE = '[',       /* bracket left */
-    BF_BRI = ']',       /* bracket right */
-    BF_PRINT_CH = '.',  /* print character */
-    BF_GET_CH = ','     /* read character */
-};
-
-
-/**
- * @brief Evaluates Brainfuck code
- *
- * @param code Code to interpret
- */
-void evaluate_bf(char *code)
+/* Evaluates Brainfuck code and prints the output to a file stream */
+void evaluate_bf(char *code, FILE *output)
 {
-    FILE *output;
-    int i;
     char *buffer = calloc(MAX_BUFFER, sizeof(char));
     char *bufferptr = buffer;
 
-//    memset(buffer, 0, MAX_BUFFER);
-
-    output = stdout;
-
-    for (; *code != 0; code++) {
+    for (; *code != 0; ++code) {
         switch (*code) {
             case BF_ADD:
                 (*bufferptr)++;
@@ -74,7 +53,7 @@ void evaluate_bf(char *code)
             case BF_BLE:
                 if (*bufferptr == 0) {
                     code++;
-                    for (i = 1; i > 0; code++) {
+                    for (int i = 1; i > 0; ++code) {
                         if (*code == '[') {
                             i++;
                         } else if (*code == ']') {
@@ -88,7 +67,7 @@ void evaluate_bf(char *code)
             case BF_BRI:
                 if (*bufferptr != 0) {
                     code--;
-                    for (i = 1; i != 0; code--) {
+                    for (int i = 1; i != 0; --code) {
                         if (*code == '[') {
                             i--;
                         } else if (*code == ']') {
@@ -115,6 +94,5 @@ void evaluate_bf(char *code)
     }
 
     free(buffer);
-    fclose(output);
 }
 

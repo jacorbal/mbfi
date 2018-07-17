@@ -23,6 +23,8 @@
 #ifndef MBFI_H
 #define MBFI_H
 
+#include <stdio.h>  /* FILE */
+
 
 #define MAX_BUFFER 30000
 

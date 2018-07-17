@@ -20,8 +20,8 @@
  * SOFTWARE.
  */
 
-#include <stdlib.h>
-#include <stdio.h>
+#include <stdio.h>  /* FILE */
+#include <stdlib.h> /* calloc, free */
 
 #include <mbfi.h>
 

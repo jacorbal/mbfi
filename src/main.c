@@ -18,8 +18,8 @@
  * SOFTWARE.
  */
 
-#include <stdio.h>
-#include <stdlib.h>
+#include <stdio.h>  /* FILE, perror, stdout */
+#include <stdlib.h> /* malloc, free, NULL */
 
 #include <mbfi.h>
 

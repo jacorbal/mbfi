@@ -45,8 +45,10 @@
  *       suitable for non-seekable streams (pipes, sockets, or some procfs
  *       entries)
  * @note It can overflow or misbehave for very large files on platforms
- *       where ftell returns a 32-bit long
- * @note The buffer is null-terminated and must be freed by the caller
+ *       where @a ftell returns a 32-bit long
+ * @note The buffer is null-terminated
+ *
+ * @warning The buffer must be freed by the caller
  */
 int mbfi_read_file_to_buffer(const char *path, char **buffer);
 
@@ -58,14 +60,16 @@ int mbfi_read_file_to_buffer(const char *path, char **buffer);
  * the current file position) into a dynamically-allocated buffer and
  * returns it via @p buffer.
  *
- * @param fp     Open FILE* stream to read from (must not be @c NULL)
+ * @param fp     Open file stream to read from (must not be @c NULL)
  * @param buffer Pointer that will receive the allocated buffer
  *
- * @return 0 on success, and @p buffer will point to a null-terminated
- *         buffer; on error returns -1 and leaves @a errno set to
- *         indicate the failure
+ * @return 0 if success and @p buffer will point to a @a malloc'd,
+ *         null‑terminated; on failure returns a non‑zero value and
+ *         leaves @e errno set to indicate the error
  *
- * @note The buffer is null-terminated and must be freed by the caller
+ * @note The buffer is null-terminated
+ *
+ * @warning The buffer must be freed by the caller
  */
 int mbfi_read_stream_to_buffer(FILE *fp, char **buffer);
 

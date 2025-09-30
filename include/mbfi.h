@@ -3,7 +3,7 @@
  *
  * @brief Brainfuck interpreter declaration
  *
- * @version 1.0.3
+ * @version 1.0.4
  * @author J. A. Corbal <jacorbal@gmail.com>
  */
 /*
@@ -20,6 +20,7 @@
 #ifndef MBFI_H
 #define MBFI_H
 
+/* System includes */
 #include <stdio.h>  /* FILE */
 
 

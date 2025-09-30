@@ -13,7 +13,7 @@ B_DIR = ${PWD}/bin
 
 ## Compiler & linker opts.
 CC           = gcc
-CCSTANDARD   = c11 #{c{98,03,11,0x,14,1z},gnu{98,03,11,0x,14,1z}}
+CCSTANDARD   = c90 #{c{90,99,03,11,0x,14,1z},gnu{90,99,03,11,0x,14,1z}}
 OPTIMIZATION = 3 #0:debug; 1:optimize; 2:optimize even more; 3:optimize yet more
 WARNINGS     = -Werror -Wall -Wshadow -Wextra -Wwrite-strings #-Wconversion
 EXTRA_OPTS   = -fdiagnostics-color=always
@@ -39,11 +39,11 @@ SHELL = /bin/sh
 ## Files options
 TARGET = ${B_DIR}/main
 OBJS = $(patsubst ${S_DIR}/%.c, ${O_DIR}/%.o, $(wildcard ${S_DIR}/*.c))
-RUN_ARGS =
+ARGS ?=
 
 ## Linkage
 ${TARGET}: ${OBJS}
-	${CC} ${LDFLAGS} -o $@ $^
+	${CC} -o $@ $^ ${LDFLAGS}
 
 
 ## Compilation
@@ -52,7 +52,7 @@ ${O_DIR}/%.o: ${S_DIR}/%.c
 
 
 ## Make options
-.PHONY: clean clean-obj clean-all
+.PHONY: all clean clean-obj clean-all run hard-run help
 
 all:
 	make ${TARGET}
@@ -71,7 +71,7 @@ clean-all:
 	@make clean
 
 run:
-	${TARGET} ${RUN_ARGS}
+	${TARGET} ${ARGS}
 
 hard:
 	@make clean
@@ -81,9 +81,6 @@ hard-run:
 	@make clean
 	@make all
 	@make run
-
-run-hard:
-	@make hard-run
 
 help:
 	@echo "Type:"

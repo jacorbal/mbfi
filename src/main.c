@@ -3,9 +3,11 @@
  *
  * @brief Minimal Brainfuck interpreter
  *
- * @version 1.0.1
+ * @version 1.0.2
  *
  * @author J. A. Corbal <jacorbal@gmail.com>
+ * @copyright Copyright (c) 2018-2025, J. A. Corbal.
+              Licensed under the MIT license; read the file for more info.
  */
 /*
  * THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND,
@@ -18,10 +20,14 @@
  * SOFTWARE.
  */
 
+#include <errno.h>  /* errno */
 #include <stdio.h>  /* FILE, perror, stdout */
 #include <stdlib.h> /* malloc, free, NULL */
 
 #include <mbfi.h>
+
+
+#define PROG_NAME "mbfi"
 
 
 /**
@@ -34,27 +40,75 @@
  */
 static int read_file(char **buffer, const char *path)
 {
-    FILE * file;
+    FILE *file;
+    long pos;
     size_t size;
+    char *buf;
+    size_t nread;
+    int rc = 1;
 
-    file = fopen(path, "rb");
-    if (file == NULL) {
+    if (buffer == NULL || path == NULL) {
+        errno = EINVAL;
         return 1;
     }
 
-    fseek(file, 0L, SEEK_END);
-    size = ftell(file);
-    fseek(file, 0L, SEEK_SET);
+    file = fopen(path, "rb");
+    if (file == NULL) {
+        perror("fopen");
+        return 1;
+    }
 
-    *buffer = malloc(size + 1);
-    fread(*buffer, 1, size, file);
-    (*buffer)[size] = 0;
+    if (fseek(file, 0L, SEEK_END) != 0) {
+        fclose(file);
+        perror("fseek");
+        return 1;
+    }
 
-    fclose(file);
+    pos = ftell(file);
+    if (pos < 0) {
+        fclose(file);
+        perror("ftell");
+        return 1;
+    }
 
-    return 0;
+    size = (size_t)pos;
+
+    if (fseek(file, 0L, SEEK_SET) != 0) {
+        fclose(file);
+        perror("fseek");
+        return 1;
+    }
+
+    buf = (char *)malloc(size + 1);
+    if (buf == NULL) {
+        fclose(file);
+        perror("malloc");
+        return 1;
+    }
+
+    if (size > 0) {
+        nread = fread(buf, 1, size, file);
+        if (nread != size) {
+            free(buf);
+            fclose(file);
+            perror("fread");
+            return 1;
+        }
+    } else {
+        /* Empty file: still provide empty string */
+    }
+
+    buf[size] = '\0';
+    *buffer = buf;
+    rc = 0;
+
+    if (fclose(file) != 0) {
+        /* Non-fatal: report but keep loaded buffer */
+        perror("fclose");
+    }
+
+    return rc;
 }
-
 
 /**
  * @brief Shows help information
@@ -63,7 +117,7 @@ static int read_file(char **buffer, const char *path)
  */
 static void show_help(FILE *fp)
 {
-    fprintf(fp, "Usage: mbfc <source.bf>\n");
+    fprintf(fp, "Usage: %s <source.bf>\n", PROG_NAME);
 }
 
 
@@ -71,19 +125,21 @@ static void show_help(FILE *fp)
 int main(int argc, char **argv)
 {
     char * buffer;
+    int retval;
 
     if (argc < 2) {
         show_help(stderr);
-        return 1;
+        return -1;
     }
 
-    if (read_file(&buffer, argv[1]) == 0) {
-        evaluate_bf(buffer, stdout);
-    } else {
+    buffer = NULL;
+    if (read_file(&buffer, argv[1]) != 0) {
         perror("Error while loading file");
-        return 2;
+        return -2;
     }
 
-    return 0;
-}
+    retval = mbfi_eval(buffer, stdout);
+    free(buffer);
 
+    return retval;
+}

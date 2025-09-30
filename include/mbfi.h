@@ -3,7 +3,7 @@
  *
  * @brief Brainfuck interpreter declaration
  *
- * @version 1.0.1
+ * @version 1.0.2
  *
  * @author J. A. Corbal <jacorbal@gmail.com>
  *
@@ -32,7 +32,8 @@
 /**
  * @enum commands
  *
- * @brief The eight language commands each consist of a single character
+ * @brief The eight Brainfuck commands that consist of a single
+ *        character each
  */
 enum {
     BF_ADD = '+',       /* add */
@@ -48,13 +49,22 @@ enum {
 
 /* Public interface */
 /**
- * @brief Evaluates Brainfuck code
+ * @brief Evaluates Brainfuck code to an output stream
  *
  * @param code   Input code to evaluate
- * @param output Output file pointer
+ * @param output Output stream file pointer
+ *
+ * @return Status of the operation
+ * @retval  0 success
+ * @retval  1 invalid arguments
+ * @retval  2 @a calloc failed
+ * @retval  3 bracket table build error
+ * @retval  4 tape underflow
+ * @retval  5 tape overflow
+ * @retval  6 write error (@a fputc)
+ * @retval  7 @a fflush error
  */
-void evaluate_bf(char *code, FILE *output);
+int mbfi_eval(char *code, FILE *output);
 
 
-#endif /* ! MBFI_H */
-
+#endif  /* ! MBFI_H */

@@ -3,8 +3,7 @@
  *
  * @brief Minimal Brainfuck interpreter
  *
- * @version 1.0.2
- *
+ * @version 1.0.3
  * @author J. A. Corbal <jacorbal@gmail.com>
  * @copyright Copyright (c) 2018-2025, J. A. Corbal.
               Licensed under the MIT license; read the file for more info.
@@ -27,18 +26,35 @@
 #include <mbfi.h>
 
 
+#define PROG_DESC "Minimal Brainfuck interpreter"
 #define PROG_NAME "mbfi"
+#define PROG_VERSION "1.0.3"
 
 
 /**
- * @brief Reads a file and store its contents in a buffer
+ * @brief Read a file and store its contents in a buffer
  *
- * @param buffer Buffer where to store file contents
+ * Opens the file specified by @p path in binary read mode and reads its
+ * entire contents into a newly-allocated, null-terminated buffer which
+ * is returned via @p buffer.  The implementation obtains the file size
+ * by seeking to the end and using @a ftell, allocates exactly (@e size
+ * + 1) bytes, rewinds to the start, and reads @e size bytes with
+ * a single @a fread call.
+ *
  * @param path   Path where to open the file
+ * @param buffer Buffer where to store file contents
  *
- * @return 0 if success, or otherwise
+ * @return 0 if success and @p buffer will point to a @a malloc'd,
+ *         null‑terminated; on failure returns a non‑zero value and
+ *         leaves @e errno set to indicate the error
+ *
+ * @note Assumes the target file is seekable and regular: it is not
+ *       suitable for non-seekable streams (pipes, sockets, or some procfs
+ *       entries)
+ * @note It can overflow or misbehave for very large files on platforms
+ *       where ftell returns a 32-bit long
  */
-static int read_file(char **buffer, const char *path)
+static int s_read_file_to_buffer(const char *path, char **buffer)
 {
     FILE *file;
     long pos;
@@ -79,7 +95,7 @@ static int read_file(char **buffer, const char *path)
         return 1;
     }
 
-    buf = (char *)malloc(size + 1);
+    buf = (char *) malloc(size + 1);
     if (buf == NULL) {
         fclose(file);
         perror("malloc");
@@ -110,32 +126,110 @@ static int read_file(char **buffer, const char *path)
     return rc;
 }
 
+
+/**
+ * @brief Read a stream and store its contents in a null-terminated
+ *        buffer
+ *
+ * Reads all data available from the provided file stream (starting at
+ * the current file position) into a dynamically-allocated buffer and
+ * returns it via @p out.
+ *
+ * @param fp  Open FILE* stream to read from (must not be @c NULL)
+ * @param out Pointer to a char* that will receive the allocated buffer
+ *
+ * @return 0 on success, and @p *out will point to a null-terminated
+ *         buffer; on error returns -1 and leaves @a errno set to
+ *         indicate the failure
+ *
+ * @note The buffer is null-terminated and must be freed by the caller
+ */
+static int s_read_stream_to_buffer(FILE *fp, char **out)
+{
+    size_t cap = 4096;
+    size_t len = 0;
+    char *buf = malloc(cap);
+    char *tmp;
+
+    if (buf == NULL) {
+        return -1;
+    }
+
+    while (1) {
+        size_t n = fread(buf + len, 1, cap - len, fp);
+        len += n;
+        if (feof(fp)) {
+            break;
+        }
+        if (ferror(fp)) {
+            free(buf);
+            errno = EIO;
+            return -1;
+        }
+        cap *= 2;
+        tmp = realloc(buf, cap);
+        if (tmp == NULL) {
+            free(buf);
+            perror("realloc");
+            return -1;
+        }
+        buf = tmp;
+    }
+
+    /* Ensure terminator */
+    tmp = realloc(buf, len + 1);
+    if (tmp == NULL) {
+        free(buf);
+        perror("realloc");
+        return -1;
+    }
+    buf = tmp;
+    buf[len] = '\0';
+
+    *out = buf;
+    return 0;
+}
+
 /**
  * @brief Shows help information
  *
  * @param fp File pointer where to print help
  */
-static void show_help(FILE *fp)
+static void s_show_help(FILE *fp)
 {
+    fprintf(fp, "%s -- version %s\n", PROG_DESC, PROG_VERSION);
     fprintf(fp, "Usage: %s <source.bf>\n", PROG_NAME);
+    fprintf(fp, "Use '-' to read from 'stdin'\n");
 }
 
 
 /* Main entry */
 int main(int argc, char **argv)
 {
-    char * buffer;
+    char * buffer = NULL;
     int retval;
 
     if (argc < 2) {
-        show_help(stderr);
+        s_show_help(stderr);
         return -1;
     }
 
-    buffer = NULL;
-    if (read_file(&buffer, argv[1]) != 0) {
-        perror("Error while loading file");
-        return -2;
+    /* Display help to 'stdout' on '-h' (don't want to use 'strcmp' here) */
+    if (argv[1][0] == '-' && argv[1][1] == 'h' && argv[1][2] == '\0') {
+        s_show_help(stdout);
+        return 0;
+    }
+
+    if (argv[1][0] == '-' && argv[1][1] == '\0') {  /* Read from 'stdin' */
+        if (s_read_stream_to_buffer(stdin, &buffer) != 0) {
+            perror("Error while reading stdin");
+            return -2;
+        }
+    } else {                                        /* Read from file */
+        if (s_read_file_to_buffer(argv[1], &buffer) != 0) {
+            perror("Error while loading file");
+            return -2;
+        }
     }
 
     retval = mbfi_eval(buffer, stdout);

@@ -15,7 +15,7 @@ B_DIR = ${PWD}/bin
 CC           = gcc
 CCSTANDARD   = c90 #{c{90,99,03,11,0x,14,1z},gnu{90,99,03,11,0x,14,1z}}
 OPTIMIZATION = 3 #0:debug; 1:optimize; 2:optimize even more; 3:optimize yet more
-WARNINGS     = -Werror -Wall -Wshadow -Wextra -Wwrite-strings #-Wconversion
+WARNINGS     = -Werror -Wall -Wshadow -Wextra -Wwrite-strings -Wconversion
 EXTRA_OPTS   = -fdiagnostics-color=always
 CCFLAGS      = --pedantic ${WARNINGS} -std=${CCSTANDARD} ${EXTRA_OPTS} -I ${I_DIR}
 LDFLAGS      = -l m ${SDLFLAGS} -L ${L_DIR}
@@ -58,10 +58,10 @@ all:
 	make ${TARGET}
 
 clean-obj:
-	rm --force ${OBJS}
+	rm -f ${OBJS}
 
 clean-bin:
-	rm --force ${TARGET}
+	rm -f ${TARGET}
 
 clean:
 	@make clean-obj

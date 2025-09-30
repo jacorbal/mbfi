@@ -3,11 +3,8 @@
  *
  * @brief Implements Brainfuck interpreter
  *
- * @version 1.0.2
- *
+ * @version 1.0.3
  * @author J. A. Corbal <jacorbal@gmail.com>
- *
- * @note Minimal Brainfuck interpreter
  */
 /*
  * THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND,
@@ -59,10 +56,12 @@ static int s_build_jump_table_raw(const char *code,
 
     len = (int) strlen(code);
     table = calloc((size_t) len, sizeof(int));
-    if (!table) return -1;
+    if (table == NULL) {
+        return -1;
+    }
 
     stack = calloc((size_t) len, sizeof(int));
-    if (!stack) {
+    if (stack == NULL) {
         free(table);
         return -1;
     }
@@ -115,8 +114,8 @@ int mbfi_eval(char *code, FILE *output)
         return 1;
     }
 
-    tape = calloc((size_t) MAX_BUFFER, sizeof(unsigned char));
-    if (!tape) {
+    tape = calloc((size_t) MBFI_MAX_BUFFER, sizeof(unsigned char));
+    if (tape == NULL) {
         return 2;
     }
 
@@ -129,7 +128,7 @@ int mbfi_eval(char *code, FILE *output)
     }
 
     ptr = tape;
-    tape_end = tape + MAX_BUFFER;
+    tape_end = tape + MBFI_MAX_BUFFER;
     error = 0;
 
     for (ip = 0; ip < code_len && !error; ++ip) {
@@ -172,7 +171,7 @@ int mbfi_eval(char *code, FILE *output)
                 }
                 break;
 
-            case BF_PRINT_CH:
+            case BF_PUTCH:
                 n = fprintf(output, "%c", (unsigned char) *ptr);
                 if (n < 0) {
                     error = 6;
@@ -180,7 +179,7 @@ int mbfi_eval(char *code, FILE *output)
                 /* don't fflush here */
                 break;
 
-            case BF_GET_CH:
+            case BF_GETCH:
                 c = getchar();
                 if (c == EOF) {
                     *ptr = 0;

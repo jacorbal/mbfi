@@ -3,11 +3,8 @@
  *
  * @brief Brainfuck interpreter declaration
  *
- * @version 1.0.2
- *
+ * @version 1.0.3
  * @author J. A. Corbal <jacorbal@gmail.com>
- *
- * @note Minimal Brainfuck interpreter
  */
 /*
  * THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND,
@@ -26,7 +23,7 @@
 #include <stdio.h>  /* FILE */
 
 
-#define MAX_BUFFER 30000
+#define MBFI_MAX_BUFFER 30000
 
 
 /**
@@ -42,8 +39,8 @@ enum {
     BF_ARI = '>',       /* arrow right */
     BF_BLE = '[',       /* bracket left */
     BF_BRI = ']',       /* bracket right */
-    BF_PRINT_CH = '.',  /* print character */
-    BF_GET_CH = ','     /* read character */
+    BF_PUTCH = '.',     /* print character */
+    BF_GETCH = ','      /* read character */
 };
 
 

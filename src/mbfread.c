@@ -19,7 +19,7 @@
 
 /* System includes */
 #include <errno.h>  /* errno */
-#include <stdio.h>  /* FILE, perror, stdin, stdout */
+#include <stdio.h>  /* FILE, perror */
 #include <stdlib.h> /* free, malloc, realloc, NULL */
 
 /* Local includes */

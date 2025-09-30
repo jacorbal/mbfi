@@ -6,7 +6,7 @@
  * @version 1.0.4
  * @author J. A. Corbal <jacorbal@gmail.com>
  * @copyright Copyright (c) 2018-2025, J. A. Corbal.
-              Licensed under the MIT license; read the file for more info.
+ *            Licensed under the MIT license; read `LICENSE` for more info.
  */
 /*
  * THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND,
@@ -20,7 +20,7 @@
  */
 
 /* System includes */
-#include <stdio.h>  /* FILE, perror, stdout */
+#include <stdio.h>  /* FILE, perror, stdin, stdout */
 #include <stdlib.h> /* free, NULL */
 
 /* Project includes */
@@ -50,7 +50,7 @@ static void s_show_help(FILE *fp)
 /* Main entry */
 int main(int argc, char **argv)
 {
-    char * buffer = NULL;
+    char *buffer = NULL;
     int retval;
 
     if (argc < 2) {

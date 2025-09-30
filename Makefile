@@ -18,7 +18,7 @@ OPTIMIZATION = 3 #0:debug; 1:optimize; 2:optimize even more; 3:optimize yet more
 WARNINGS     = -Werror -Wall -Wshadow -Wextra -Wwrite-strings -Wconversion
 EXTRA_OPTS   = -fdiagnostics-color=always
 CCFLAGS      = --pedantic ${WARNINGS} -std=${CCSTANDARD} ${EXTRA_OPTS} -I ${I_DIR}
-LDFLAGS      = -l m ${SDLFLAGS} -L ${L_DIR}
+LDFLAGS      = -lm -L ${L_DIR}
 
 
 # Use `make DEBUG=1` to add debugging information, symbol table, etc.
@@ -26,7 +26,7 @@ DEBUG ?= 0
 ifeq ($(DEBUG), 1)
 	CCFLAGS += -DDEBUG -g -ggdb -O0
 else
-	CCFLAGS += -DNDEBUG -O${OPTIMIZATION}
+	CCFLAGS += -DNDEBUG -O${OPTIMIZATION} -s
 endif
 
 
@@ -91,4 +91,3 @@ help:
 	@echo "  'make hard'...................... Clean and build"
 	@echo ""
 	@echo " Binary will be placed in '${TARGET}'"
-

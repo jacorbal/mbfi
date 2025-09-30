@@ -25,7 +25,7 @@
 
 /* Public interface */
 /**
- * @brief Read a file and store its contents in a buffer
+ * @brief Read a file and store its contents in a null-terminated buffer
  *
  * Opens the file specified by @p path in binary read mode and reads its
  * entire contents into a newly-allocated, null-terminated buffer which
@@ -56,12 +56,12 @@ int mbfi_read_file_to_buffer(const char *path, char **buffer);
  *
  * Reads all data available from the provided file stream (starting at
  * the current file position) into a dynamically-allocated buffer and
- * returns it via @p out.
+ * returns it via @p buffer.
  *
  * @param fp     Open FILE* stream to read from (must not be @c NULL)
  * @param buffer Pointer that will receive the allocated buffer
  *
- * @return 0 on success, and @p *out will point to a null-terminated
+ * @return 0 on success, and @p buffer will point to a null-terminated
  *         buffer; on error returns -1 and leaves @a errno set to
  *         indicate the failure
  *

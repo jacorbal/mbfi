@@ -26,7 +26,7 @@
 #include <mbfread.h>
 
 
-/* Read a file and store its contents in a buffer */
+/* Read a file and store its contents in a null-terminated buffer */
 int mbfi_read_file_to_buffer(const char *path, char **buffer)
 {
     FILE *file;

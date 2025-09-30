@@ -20,7 +20,7 @@
 /* System includes */
 #include <errno.h>  /* errno */
 #include <stdio.h>  /* FILE, perror, stdin, stdout */
-#include <stdlib.h> /* malloc, free, NULL */
+#include <stdlib.h> /* free, malloc, realloc, NULL */
 
 /* Local includes */
 #include <mbfread.h>
@@ -68,7 +68,7 @@ int mbfi_read_file_to_buffer(const char *path, char **buffer)
         return 1;
     }
 
-    buf = (char *) malloc(size + 1);
+    buf = malloc(size + 1);
     if (buf == NULL) {
         fclose(file);
         perror("malloc");

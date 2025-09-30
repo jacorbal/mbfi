@@ -1,18 +1,16 @@
 Minimal Brainfuck interpreter
 =============================
 
-A minimal Brainfuck interpreter function implemented in ANSI C that
-evaluates Brainfuck source code and writes output to a provided `FILE`
-stream.
+A minimal Brainfuck interpreter implemented in ANSI C that evaluates
+Brainfuck source code and writes output to a provided `FILE` stream.
 
 ## Description
 
 The function `mbfi_eval` interprets Brainfuck code encoded as a sequence
 of token characters (macros from `mbfi.h`) and operates on a contiguous
-tape buffer allocated with `calloc(MAX_BUFFER, sizeof(char))`.  The
-function advances through code, updates the tape, handles loops,
-performs I/O, and writes printed characters to the supplied `FILE
-*output`.
+tape buffer allocated.  The function advances through code, updates the
+tape, handles loops, performs I/O, and writes printed characters to the
+supplied `FILE *output`.
 
 Behavior summary:
 
@@ -25,7 +23,7 @@ Behavior summary:
   - Non-token characters are ignored
   - Allocated tape is freed before returning
 
-## Usage example
+## API usage example
 
     #include <stdio.h>
     #include <mbfi.h>
@@ -35,6 +33,16 @@ Behavior summary:
         mbfi_eval(program, stdout);
         return 0;
     }
+
+## CLI usage examples
+
+Run the program reading input from specified file:
+
+    $ mbfi ~/dev/src/bf/program.bf
+
+Run the program reading input piped from `stdin`:
+
+    $ cat ~/dev/src/bf/program.bf | mbfi -
 
 ## License
 
